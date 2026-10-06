@@ -10,6 +10,7 @@ find_package(raylib REQUIRED)
 
 add_executable(dungeon_crawler
     src/main.cpp
+    src/Player.cpp
 )
 
 target_include_directories(dungeon_crawler PRIVATE include)

@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "Player.h"
 
 #include <algorithm>
 #include <cmath>
@@ -11,46 +12,16 @@ int main()
   InitWindow(screenWidth, screenHeight, "Dungeon Crawler"); //initalizing window + setting target fps
   SetTargetFPS(60);
 
-  Rectangle player{
-    screenWidth / 2.0f - 16.0f, //creating the player
-    screenHeight / 2.0f - 16.0f,
-    32.0f,
-    32.0f
-  };
-
-  constexpr float playerSpeed = 220.0f;
+  Player player{
+        screenWidth / 2.0f - 16.0f,
+        screenHeight / 2.0f - 16.0f
+    };
 
   while(!WindowShouldClose()) { //keeps window open and game loop running
 
     const float deltaTime = GetFrameTime();
 
-    Vector2 direction{0.0f, 0.0f};
-
-    if(IsKeyDown(KEY_W)) direction.y -= 1.0f;
-    if(IsKeyDown(KEY_S)) direction.y += 1.0f; //key input for direction movement 
-    if(IsKeyDown(KEY_A)) direction.x -= 1.0f;
-    if(IsKeyDown(KEY_D)) direction.x += 1.0f;
-
-    const float length = std::sqrt( //nomralization for diagonal movement
-      direction.x * direction.x +
-      direction.y * direction.y  
-    );
-
-    if (length > 0.0f) {
-      direction.x /= length; //if only one direction sqrt of 1 is 1 dividing by 1 else
-      direction.y /= length;
-    }
-
-    player.x += direction.x * playerSpeed * deltaTime;
-    player.y += direction.y * playerSpeed * deltaTime; //always times by deltatime so it runs same on everyones computer
-
-    player.x = std::clamp(
-      player.x, 0.0f, screenWidth - player.width //clamps plauer x to stay within screen
-    );
-
-    player.y = std::clamp(
-      player.y, 0.0f, screenHeight - player.height //same clamp for y
-    );
+    player.Update(deltaTime);
 
     BeginDrawing();
 
