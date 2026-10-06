@@ -1,0 +1,6 @@
+# Generated build files
+build/
+cmake-build-*/
+
+# macOS files
+.DS_Store
