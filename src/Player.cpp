@@ -4,12 +4,12 @@
 #include <cmath>
 
 Player::Player(float x, float y)
-  : bounds(x, y, 32.0, 32.0)
+  : bounds{x, y, 32.0, 32.0}
 {
 
 }
 
-void Player::Update(float deltaTime)
+void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
 {
 
   Vector2 direction{0.0f, 0.0f};
@@ -27,13 +27,38 @@ void Player::Update(float deltaTime)
   if(length > 0.0f) {
 
     direction.x /= length;
-    direction.y /= length;
+    direction.y /= length;  //normalization for diagonal movement. 
   }
 
+  // Try horizontal movement.
+  const float previousX = bounds.x;
+
   bounds.x += direction.x * speed * deltaTime;
+
+  for (const Rectangle& wall : walls)
+  {
+      if (CheckCollisionRecs(bounds, wall))
+      {
+          bounds.x = previousX;
+          break;
+      }
+  }
+
+  // Try vertical movement.
+  const float previousY = bounds.y;
+
   bounds.y += direction.y * speed * deltaTime;
 
-  bounds.x = std::clamp(
+  for (const Rectangle& wall : walls) //loops through vector of walls
+  {
+      if (CheckCollisionRecs(bounds, wall)) //returns true or false based on rectangle overrlap
+      {
+          bounds.y = previousY; //if true cant move further
+          break;
+      }
+  }
+
+  bounds.x = std::clamp( //x and y clamp to gamescreen
         bounds.x,
         0.0f,
         static_cast<float>(GetScreenWidth()) - bounds.width
