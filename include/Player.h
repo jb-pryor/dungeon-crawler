@@ -9,6 +9,8 @@ class Player {
 
     void Update(float deltaTime, const std::vector<Rectangle>& walls);
     void Draw() const;
+    Rectangle GetBounds() const;
+    void SetPosition(Vector2 position);
 
   private: //priate refers to data managed by the class
     Rectangle bounds;

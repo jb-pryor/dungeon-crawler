@@ -4,6 +4,9 @@
 
 #include <algorithm>
 #include <cmath>
+#include <utility>
+#include <string>
+#include <optional>
 
 int main()
 {
@@ -33,6 +36,44 @@ int main()
     room.Draw();
 
     player.Update(deltaTime, room.GetWalls());
+
+    std::optional<Door> enteredDoor;
+
+    for (const Door& door : room.GetDoors()) {
+
+      if(CheckCollisionRecs(player.GetBounds(), door.bounds)) {
+
+        enteredDoor = door;
+        break;
+      }
+    }
+
+    // Switch rooms if a door was found.
+    if (enteredDoor.has_value())
+    {
+        const Door& door = enteredDoor.value();
+
+        const std::string filePath =
+            "assets/levels/room" +
+            std::to_string(door.destinationRoom) +
+            ".txt";
+
+        Room nextRoom{door.destinationRoom};
+
+        if (nextRoom.LoadLevel(filePath))
+        {
+            room = std::move(nextRoom);
+            player.SetPosition(door.destinationSpawn);
+        }
+        else
+        {
+            TraceLog(
+                LOG_WARNING,
+                "Could not load room: %s",
+                filePath.c_str()
+            );
+        }
+    }
 
     BeginDrawing();
 

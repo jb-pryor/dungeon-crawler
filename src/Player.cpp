@@ -78,3 +78,14 @@ void Player::Draw() const
 {
   DrawRectangleRec(bounds, SKYBLUE);
 }
+
+Rectangle Player::GetBounds() const {
+
+  return bounds;
+}
+
+void Player::SetPosition(Vector2 position) {
+
+  bounds.x = position.x;
+  bounds.y = position.y;
+}
