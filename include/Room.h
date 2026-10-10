@@ -8,7 +8,6 @@ struct Door {
 
   Rectangle bounds;
   int destinationRoom;
-  Vector2 destinationSpawn;
 
 };
 

@@ -8,6 +8,44 @@
 #include <string>
 #include <optional>
 
+Vector2 GetArrivalPosition(
+    const Door& door,
+    Rectangle player,
+    int roomWidth,
+    int roomHeight)
+{
+    constexpr float borderSize = 40.0f;
+    constexpr float gap = 2.0f;
+
+    // Start with the player's current position.
+    Vector2 arrival{player.x, player.y};
+
+    if (door.bounds.x <= 0.0f)
+    {
+        // Left door -> appear inside the right border.
+        arrival.x =
+            roomWidth - borderSize - player.width - gap;
+    }
+    else if (door.bounds.x + door.bounds.width >= roomWidth)
+    {
+        // Right door -> appear inside the left border.
+        arrival.x = borderSize + gap;
+    }
+    else if (door.bounds.y <= 0.0f)
+    {
+        // Top door -> appear inside the bottom border.
+        arrival.y =
+            roomHeight - borderSize - player.height - gap;
+    }
+    else if (door.bounds.y + door.bounds.height >= roomHeight)
+    {
+        // Bottom door -> appear inside the top border.
+        arrival.y = borderSize + gap;
+    }
+
+    return arrival;
+}
+
 int main()
 {
   constexpr int screenWidth = 960;
@@ -62,8 +100,15 @@ int main()
 
         if (nextRoom.LoadLevel(filePath))
         {
-            room = std::move(nextRoom);
-            player.SetPosition(door.destinationSpawn);
+          const Vector2 arrival = GetArrivalPosition(
+            door,
+            player.GetBounds(),
+            screenWidth,
+            screenHeight
+          );
+
+          room = std::move(nextRoom);
+          player.SetPosition(arrival);
         }
         else
         {
