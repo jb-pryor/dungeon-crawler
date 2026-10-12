@@ -80,6 +80,11 @@ int main()
     player.Update(deltaTime, room.GetWalls());
     enemy.Update(deltaTime, player.GetBounds(), room.GetWalls());
 
+    if (CheckCollisionRecs(player.GetBounds(), enemy.GetBounds()))
+    {
+      player.TakeDamage(10);
+    }
+
     std::optional<Door> enteredDoor;
 
     for (const Door& door : room.GetDoors()) {
@@ -130,9 +135,24 @@ int main()
     ClearBackground(Color{22, 22, 30, 225});
 
     player.Draw();
+      DrawText(
+      TextFormat("Health: %d", player.GetHealth()),
+      820,
+      20,
+      24,
+      WHITE
+    );
+
+    if (player.IsDead())
+    {
+        DrawText("Game Over", 360, 280, 40, RED);
+    }
+
+
+
     DrawText("Dungeon Crawler", 20, 20, 28, RAYWHITE);
     DrawText("WASD to move | ESC to quit", 20, 56, 20, GRAY);
-    DrawFPS(screenWidth - 100, 20);
+    //DrawFPS(screenWidth - 100, 20);
 
     EndDrawing();
 

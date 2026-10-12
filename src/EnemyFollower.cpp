@@ -78,3 +78,8 @@ void EnemyFollower::Draw() const
 {
     DrawRectangleRec(bounds, ORANGE);
 }
+
+Rectangle EnemyFollower::GetBounds() const
+{
+    return bounds;
+}

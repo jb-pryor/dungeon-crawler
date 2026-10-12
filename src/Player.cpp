@@ -12,6 +12,13 @@ Player::Player(float x, float y)
 void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
 {
 
+  damageCooldown = std::max(0.0f, damageCooldown - deltaTime);
+
+  if (IsDead())
+  {
+    return;
+  }
+
   Vector2 direction{0.0f, 0.0f};
 
   if(IsKeyDown(KEY_W)) direction.y -= 1.0f;
@@ -88,4 +95,25 @@ void Player::SetPosition(Vector2 position) {
 
   bounds.x = position.x;
   bounds.y = position.y;
+}
+
+void Player::TakeDamage(int damage) { //method for player to take damage
+
+  if (damage <= 0 || damageCooldown > 0.0f || IsDead())
+  {
+      return;
+  }
+
+  health = std::max(0, health - damage);
+  damageCooldown = 1.0f;
+}
+
+int Player::GetHealth() const { //returns current player health
+
+  return health;
+}
+
+bool Player::IsDead() const { //returns bool if player has no health remaining
+
+  return health == 0;
 }

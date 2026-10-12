@@ -13,8 +13,9 @@ class EnemyFollower {
         const std::vector<Rectangle>& walls
     );
     void Draw() const;
+    Rectangle GetBounds() const;
 
   private:
     Rectangle bounds;
-    float speed = 180.0f;
+    float speed = 120.0f;
 };

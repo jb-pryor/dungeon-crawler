@@ -12,7 +12,14 @@ class Player {
     Rectangle GetBounds() const;
     void SetPosition(Vector2 position);
 
+    void TakeDamage(int damage);
+    int GetHealth() const;
+    bool IsDead() const;  
+
+
   private: //priate refers to data managed by the class
     Rectangle bounds;
     float speed = 220.0f;
+    int health = 100;
+    float damageCooldown = 0.0f;
 };

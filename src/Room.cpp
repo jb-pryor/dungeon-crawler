@@ -91,7 +91,7 @@ void Room::Draw() const {
 
   for(const Rectangle& wall : walls) {
 
-    DrawRectangleRec(wall, RED);
+    DrawRectangleRec(wall, GRAY);
   }
 
   for(const Door& door : doors) {
