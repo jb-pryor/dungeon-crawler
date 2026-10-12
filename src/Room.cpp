@@ -73,7 +73,6 @@ bool Room::LoadLevel(const std::string& filePath) {
                       static_cast<float>(tileSize)
                   },
                   tile - '0',
-                  Vector2{80.0f, 80.0f}
                 });
             }
         }

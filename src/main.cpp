@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include "Player.h"
 #include "Room.h"
+#include "EnemyFollower.h"
 
 #include <algorithm>
 #include <cmath>
@@ -68,12 +69,16 @@ int main()
       return 1;
   }
 
+  EnemyFollower enemy{160.0f, 160.0f};
+
   while(!WindowShouldClose()) { //keeps window open and game loop running
 
     const float deltaTime = GetFrameTime();
     room.Draw();
+    enemy.Draw();
 
     player.Update(deltaTime, room.GetWalls());
+    enemy.Update(deltaTime, player.GetBounds(), room.GetWalls());
 
     std::optional<Door> enteredDoor;
 

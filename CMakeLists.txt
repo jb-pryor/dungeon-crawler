@@ -12,6 +12,7 @@ add_executable(dungeon_crawler
     src/main.cpp
     src/Player.cpp
     src/Room.cpp
+    src/EnemyFollower.cpp
 )
 
 target_include_directories(dungeon_crawler PRIVATE include)
