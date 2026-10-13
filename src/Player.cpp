@@ -14,6 +14,11 @@ void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
 
   damageCooldown = std::max(0.0f, damageCooldown - deltaTime);
 
+  damageFlashTimer = std::max(
+    0.0f,
+    damageFlashTimer - deltaTime
+  );
+
   if (IsDead())
   {
     return;
@@ -83,7 +88,20 @@ void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
 
 void Player::Draw() const
 {
-  DrawRectangleRec(bounds, SKYBLUE);
+    Color color = SKYBLUE;
+
+    if (damageFlashTimer > 0.0f)
+    {
+        constexpr float flashDuration = 0.2f;
+        constexpr float flashInterval = 0.05f;
+
+        const float elapsed = flashDuration - damageFlashTimer;
+        const int phase = static_cast<int>(elapsed / flashInterval);
+
+        color = (phase % 2 == 0) ? RED : WHITE;
+    }
+
+    DrawRectangleRec(bounds, color);
 }
 
 Rectangle Player::GetBounds() const {
@@ -106,6 +124,7 @@ void Player::TakeDamage(int damage) { //method for player to take damage
 
   health = std::max(0, health - damage);
   damageCooldown = 1.0f;
+  damageFlashTimer = 0.2f;
 }
 
 int Player::GetHealth() const { //returns current player health

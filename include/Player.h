@@ -22,4 +22,5 @@ class Player {
     float speed = 220.0f;
     int health = 100;
     float damageCooldown = 0.0f;
+    float damageFlashTimer = 0.0f;
 };
