@@ -82,8 +82,29 @@ void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
         static_cast<float>(GetScreenHeight()) - bounds.height
     );
   
+  const Vector2 playerCenter{
+    bounds.x + bounds.width / 2.0f,
+    bounds.y + bounds.height / 2.0f
+  };
 
+  const Vector2 mouse = GetMousePosition();
 
+  Vector2 mouseDirection{
+      mouse.x - playerCenter.x,
+      mouse.y - playerCenter.y
+  };
+
+  const float aimLength = std::sqrt(
+      mouseDirection.x * mouseDirection.x +
+      mouseDirection.y * mouseDirection.y
+  );
+
+  if (aimLength > 0.001f)
+  {
+      aimDirection.x = mouseDirection.x / aimLength;
+      aimDirection.y = mouseDirection.y / aimLength;
+  }
+  
 }
 
 void Player::Draw() const
@@ -102,6 +123,50 @@ void Player::Draw() const
     }
 
     DrawRectangleRec(bounds, color);
+
+    const Vector2 center{
+    bounds.x + bounds.width / 2.0f,
+    bounds.y + bounds.height / 2.0f
+  };
+
+  constexpr float orbitRadius = 30.0f;
+  constexpr float triangleLength = 12.0f;
+  constexpr float triangleHalfWidth = 6.0f;
+
+  // Position the triangle on a circle around the player.
+  const Vector2 markerCenter{
+      center.x + aimDirection.x * orbitRadius,
+      center.y + aimDirection.y * orbitRadius
+  };
+
+  // A direction perpendicular to the aim direction.
+  const Vector2 sideways{
+      -aimDirection.y,
+      aimDirection.x
+  };
+
+  // Point faces away from the player.
+  const Vector2 tip{
+      markerCenter.x + aimDirection.x * triangleLength / 2.0f,
+      markerCenter.y + aimDirection.y * triangleLength / 2.0f
+  };
+
+  const Vector2 baseCenter{
+      markerCenter.x - aimDirection.x * triangleLength / 2.0f,
+      markerCenter.y - aimDirection.y * triangleLength / 2.0f
+  };
+
+  const Vector2 baseLeft{
+      baseCenter.x - sideways.x * triangleHalfWidth,
+      baseCenter.y - sideways.y * triangleHalfWidth
+  };
+
+  const Vector2 baseRight{
+      baseCenter.x + sideways.x * triangleHalfWidth,
+      baseCenter.y + sideways.y * triangleHalfWidth
+  };
+
+  DrawTriangle(tip, baseLeft, baseRight, GOLD);
 }
 
 Rectangle Player::GetBounds() const {

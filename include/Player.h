@@ -23,4 +23,5 @@ class Player {
     int health = 100;
     float damageCooldown = 0.0f;
     float damageFlashTimer = 0.0f;
+    Vector2 aimDirection{1.0f, 0.0f};
 };
