@@ -82,11 +82,19 @@ int main()
     }
 
     player.Update(deltaTime, room.GetWalls());
-    if (room.GetId() == enemyRoomId)
+    if (room.GetId() == enemyRoomId && !enemy.IsDead())
     {
       enemy.Update(deltaTime, player.GetBounds(), room.GetWalls());
 
-      if (CheckCollisionRecs(player.GetBounds(), enemy.GetBounds()))
+      if (player.DidAttackThisFrame() &&
+          player.AttackHits(enemy.GetBounds()))
+      {
+          enemy.TakeDamage(25);
+      }
+
+      // A defeated enemy cannot damage the player.
+      if (!enemy.IsDead() &&
+          CheckCollisionRecs(player.GetBounds(), enemy.GetBounds()))
       {
           player.TakeDamage(10);
       }
@@ -126,6 +134,7 @@ int main()
 
           room = std::move(nextRoom);
           player.SetPosition(arrival);
+          player.CancelAttack();
         }
         else
         {

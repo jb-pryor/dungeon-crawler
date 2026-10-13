@@ -19,6 +19,11 @@ void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
     damageFlashTimer - deltaTime
   );
 
+  attackedThisFrame = false;
+
+  attackTimer = std::max(0.0f, attackTimer - deltaTime);
+  attackCooldown = std::max(0.0f, attackCooldown - deltaTime);
+
   if (IsDead())
   {
     return;
@@ -104,6 +109,38 @@ void Player::Update(float deltaTime, const std::vector<Rectangle>& walls)
       aimDirection.x = mouseDirection.x / aimLength;
       aimDirection.y = mouseDirection.y / aimLength;
   }
+
+  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
+    attackCooldown <= 0.0f)
+  {
+      constexpr float attackLength = 48.0f;
+      constexpr float attackWidth = 32.0f;
+
+      const Vector2 center{
+          bounds.x + bounds.width / 2.0f,
+          bounds.y + bounds.height / 2.0f
+      };
+
+      // Start the attack just outside the player's body.
+      const float bodyRadius =
+          std::max(bounds.width, bounds.height) / 2.0f;
+
+      const float offset = bodyRadius + attackLength / 2.0f;
+
+      attackZone = AttackZone{
+          Vector2{
+              center.x + aimDirection.x * offset,
+              center.y + aimDirection.y * offset
+          },
+          aimDirection,
+          attackLength,
+          attackWidth
+      };
+
+      attackedThisFrame = true;
+      attackTimer = attackDuration;
+      attackCooldown = attackDelay;
+  }
   
 }
 
@@ -167,6 +204,49 @@ void Player::Draw() const
   };
 
   DrawTriangle(tip, baseLeft, baseRight, GOLD);
+
+  if (attackTimer > 0.0f && !IsDead())
+  {
+      const Vector2 forward = attackZone.direction;
+      const Vector2 sideways{-forward.y, forward.x};
+
+      const float halfLength = attackZone.length / 2.0f;
+      const float halfWidth = attackZone.width / 2.0f;
+
+      const Vector2 a{
+          attackZone.center.x + forward.x * halfLength
+                              - sideways.x * halfWidth,
+          attackZone.center.y + forward.y * halfLength
+                              - sideways.y * halfWidth
+      };
+
+      const Vector2 b{
+          attackZone.center.x - forward.x * halfLength
+                              - sideways.x * halfWidth,
+          attackZone.center.y - forward.y * halfLength
+                              - sideways.y * halfWidth
+      };
+
+      const Vector2 c{
+          attackZone.center.x - forward.x * halfLength
+                              + sideways.x * halfWidth,
+          attackZone.center.y - forward.y * halfLength
+                              + sideways.y * halfWidth
+      };
+
+      const Vector2 d{
+          attackZone.center.x + forward.x * halfLength
+                              + sideways.x * halfWidth,
+          attackZone.center.y + forward.y * halfLength
+                              + sideways.y * halfWidth
+      };
+
+      const Color attackColor{40, 140, 255, 100};
+
+      // Two triangles form the rotated rectangle.
+      DrawTriangle(a, b, c, attackColor);
+      DrawTriangle(a, c, d, attackColor);
+  }
 }
 
 Rectangle Player::GetBounds() const {
@@ -200,4 +280,71 @@ int Player::GetHealth() const { //returns current player health
 bool Player::IsDead() const { //returns bool if player has no health remaining
 
   return health == 0;
+}
+
+bool Player::DidAttackThisFrame() const
+{
+    return attackedThisFrame;
+}
+
+void Player::CancelAttack()
+{
+    attackedThisFrame = false;
+    attackTimer = 0.0f;
+}
+
+bool Player::AttackHits(Rectangle target) const
+{
+    if (!attackedThisFrame || IsDead())
+    {
+        return false;
+    }
+
+    const Vector2 forward = attackZone.direction;
+    const Vector2 sideways{-forward.y, forward.x};
+
+    const Vector2 targetCenter{
+        target.x + target.width / 2.0f,
+        target.y + target.height / 2.0f
+    };
+
+    const Vector2 difference{
+        targetCenter.x - attackZone.center.x,
+        targetCenter.y - attackZone.center.y
+    };
+
+    // Test both rectangles' axes.
+    const Vector2 axes[]{
+        forward,
+        sideways,
+        Vector2{1.0f, 0.0f},
+        Vector2{0.0f, 1.0f}
+    };
+
+    for (const Vector2& axis : axes)
+    {
+        const float centerDistance = std::abs(
+            difference.x * axis.x +
+            difference.y * axis.y
+        );
+
+        const float attackRadius =
+            attackZone.length / 2.0f * std::abs(
+                forward.x * axis.x + forward.y * axis.y
+            ) +
+            attackZone.width / 2.0f * std::abs(
+                sideways.x * axis.x + sideways.y * axis.y
+            );
+
+        const float targetRadius =
+            target.width / 2.0f * std::abs(axis.x) +
+            target.height / 2.0f * std::abs(axis.y);
+
+        if (centerDistance > attackRadius + targetRadius)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

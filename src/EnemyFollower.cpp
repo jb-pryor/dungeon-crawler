@@ -13,6 +13,11 @@ void EnemyFollower::Update(
     Rectangle playerBounds,
     const std::vector<Rectangle>& walls)
 {
+
+  if (IsDead())
+  {
+      return;
+  }
     // Find the center of the enemy and player.
     const Vector2 enemyCenter{
         bounds.x + bounds.width / 2.0f,
@@ -76,10 +81,35 @@ void EnemyFollower::Update(
 
 void EnemyFollower::Draw() const
 {
-    DrawRectangleRec(bounds, ORANGE);
+
+  if (IsDead())
+  {
+    return;
+  }
+  DrawRectangleRec(bounds, ORANGE);
 }
 
 Rectangle EnemyFollower::GetBounds() const
 {
     return bounds;
+}
+
+void EnemyFollower::TakeDamage(int damage)
+{
+    if (damage <= 0 || IsDead())
+    {
+        return;
+    }
+
+    health = std::max(0, health - damage);
+}
+
+bool EnemyFollower::IsDead() const
+{
+    return health == 0;
+}
+
+int EnemyFollower::GetHealth() const
+{
+    return health;
 }
