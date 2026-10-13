@@ -21,5 +21,8 @@ class EnemyFollower {
   private:
     Rectangle bounds;
     float speed = 120.0f;
-    int health = 50;
-};
+    static constexpr int maxHealth = 50;
+    int health = maxHealth; 
+
+    float healthBarTimer = 0.0f;  
+};      

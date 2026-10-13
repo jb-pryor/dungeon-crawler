@@ -14,6 +14,8 @@ void EnemyFollower::Update(
     const std::vector<Rectangle>& walls)
 {
 
+  healthBarTimer = std::max(0.0f, healthBarTimer - deltaTime);
+
   if (IsDead())
   {
       return;
@@ -81,12 +83,44 @@ void EnemyFollower::Update(
 
 void EnemyFollower::Draw() const
 {
+    if (IsDead())
+    {
+        return;
+    }
 
-  if (IsDead())
-  {
-    return;
-  }
-  DrawRectangleRec(bounds, ORANGE);
+    DrawRectangleRec(bounds, ORANGE);
+
+    if (healthBarTimer > 0.0f)
+    {
+        constexpr float barWidth = 40.0f;
+        constexpr float barHeight = 6.0f;
+        constexpr float gap = 8.0f;
+
+        const float barX =
+            bounds.x + bounds.width / 2.0f - barWidth / 2.0f;
+
+        const float barY = bounds.y - gap - barHeight;
+
+        const float healthRatio =
+            static_cast<float>(health) / maxHealth;
+
+        // Background represents missing health.
+        DrawRectangleRec(
+            Rectangle{barX, barY, barWidth, barHeight},
+            DARKGRAY
+        );
+
+        // Filled portion represents remaining health.
+        DrawRectangleRec(
+            Rectangle{
+                barX,
+                barY,
+                barWidth * healthRatio,
+                barHeight
+            },
+            GREEN
+        );
+    }
 }
 
 Rectangle EnemyFollower::GetBounds() const
@@ -102,6 +136,7 @@ void EnemyFollower::TakeDamage(int damage)
     }
 
     health = std::max(0, health - damage);
+    healthBarTimer = 2.0f;
 }
 
 bool EnemyFollower::IsDead() const
