@@ -111,3 +111,8 @@ const std::vector<Door>& Room::GetDoors() const {
 
   return doors;
 }
+
+int Room::GetId() const {
+
+  return id;
+}

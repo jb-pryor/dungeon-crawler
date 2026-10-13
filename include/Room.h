@@ -20,6 +20,7 @@ class Room { //room probably needs index number for different rooms + a 2d vecto
 
     const std::vector<Rectangle>& GetWalls() const;
     const std::vector<Door>& GetDoors() const;
+    int GetId() const;
   
   private:
     int id;

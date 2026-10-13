@@ -60,7 +60,10 @@ int main()
         screenHeight / 2.0f - 16.0f
     };
 
-  Room room{0};
+  Room room{1};
+
+  EnemyFollower enemy{160.0f, 160.0f};
+  constexpr int enemyRoomId = 1;
 
   if (!room.LoadLevel("assets/levels/room1.txt"))
   {
@@ -69,16 +72,25 @@ int main()
       return 1;
   }
 
-  EnemyFollower enemy{160.0f, 160.0f};
-
   while(!WindowShouldClose()) { //keeps window open and game loop running
 
     const float deltaTime = GetFrameTime();
     room.Draw();
-    enemy.Draw();
+    if (room.GetId() == enemyRoomId)
+    {
+      enemy.Draw();
+    }
 
     player.Update(deltaTime, room.GetWalls());
-    enemy.Update(deltaTime, player.GetBounds(), room.GetWalls());
+    if (room.GetId() == enemyRoomId)
+    {
+      enemy.Update(deltaTime, player.GetBounds(), room.GetWalls());
+
+      if (CheckCollisionRecs(player.GetBounds(), enemy.GetBounds()))
+      {
+          player.TakeDamage(10);
+      }
+    }
 
     if (CheckCollisionRecs(player.GetBounds(), enemy.GetBounds()))
     {
