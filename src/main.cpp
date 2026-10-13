@@ -92,11 +92,6 @@ int main()
       }
     }
 
-    if (CheckCollisionRecs(player.GetBounds(), enemy.GetBounds()))
-    {
-      player.TakeDamage(10);
-    }
-
     std::optional<Door> enteredDoor;
 
     for (const Door& door : room.GetDoors()) {
