@@ -141,7 +141,10 @@ int main()
 
     ClearBackground(Color{22, 22, 30, 225});
 
-    player.Draw();
+    if(!player.IsDead()) {
+
+      player.Draw();
+    }
       DrawText(
       TextFormat("Health: %d", player.GetHealth()),
       820,
