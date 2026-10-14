@@ -78,7 +78,7 @@ int main()
     room.Draw();
     if (room.GetId() == enemyRoomId)
     {
-      enemy.Draw();
+      enemy.Draw(player.IsDead());
     }
 
     player.Update(deltaTime, room.GetWalls());

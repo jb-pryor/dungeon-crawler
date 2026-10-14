@@ -14,7 +14,6 @@ void EnemyFollower::Update(
     const std::vector<Rectangle>& walls)
 {
 
-  healthBarTimer = std::max(0.0f, healthBarTimer - deltaTime);
 
   if (IsDead())
   {
@@ -81,7 +80,7 @@ void EnemyFollower::Update(
     }
 }
 
-void EnemyFollower::Draw() const
+void EnemyFollower::Draw(bool playerIsDead) const
 {
     if (IsDead())
     {
@@ -90,7 +89,7 @@ void EnemyFollower::Draw() const
 
     DrawRectangleRec(bounds, ORANGE);
 
-    if (healthBarTimer > 0.0f)
+    if (hasTakenDamage && !playerIsDead)
     {
         constexpr float barWidth = 40.0f;
         constexpr float barHeight = 6.0f;
@@ -136,7 +135,7 @@ void EnemyFollower::TakeDamage(int damage)
     }
 
     health = std::max(0, health - damage);
-    healthBarTimer = 2.0f;
+    hasTakenDamage = true;
 }
 
 bool EnemyFollower::IsDead() const

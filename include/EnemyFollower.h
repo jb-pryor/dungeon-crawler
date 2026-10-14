@@ -12,7 +12,7 @@ class EnemyFollower {
         Rectangle playerBounds,
         const std::vector<Rectangle>& walls
     );
-    void Draw() const;
+    void Draw(bool playerIsDead) const;
     Rectangle GetBounds() const;
     void TakeDamage(int damage);
     bool IsDead() const;
@@ -24,5 +24,5 @@ class EnemyFollower {
     static constexpr int maxHealth = 50;
     int health = maxHealth; 
 
-    float healthBarTimer = 0.0f;  
+    bool hasTakenDamage = false;
 };      
