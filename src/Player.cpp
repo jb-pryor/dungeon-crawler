@@ -348,3 +348,73 @@ bool Player::AttackHits(Rectangle target) const
 
     return true;
 }
+
+bool Player::HasClearAttackPath(
+    Rectangle target,
+    const std::vector<Rectangle>& walls) const
+{
+    const Vector2 start{
+        bounds.x + bounds.width / 2.0f,
+        bounds.y + bounds.height / 2.0f
+    };
+
+    const Vector2 end{
+        target.x + target.width / 2.0f,
+        target.y + target.height / 2.0f
+    };
+
+    const Vector2 direction{
+        end.x - start.x,
+        end.y - start.y
+    };
+
+    for (const Rectangle& wall : walls)
+    {
+        float enter = 0.0f;
+        float exit = 1.0f;
+
+        // Find where the line crosses one axis of the wall.
+        auto overlapsAxis = [&](float origin, float movement,
+                                float minimum, float maximum)
+        {
+            if (std::abs(movement) < 0.0001f)
+            {
+                return origin >= minimum && origin <= maximum;
+            }
+
+            float first = (minimum - origin) / movement;
+            float second = (maximum - origin) / movement;
+
+            if (first > second)
+            {
+                std::swap(first, second);
+            }
+
+            enter = std::max(enter, first);
+            exit = std::min(exit, second);
+
+            return enter <= exit;
+        };
+
+        const bool crossesX = overlapsAxis(
+            start.x,
+            direction.x,
+            wall.x,
+            wall.x + wall.width
+        );
+
+        const bool crossesY = overlapsAxis(
+            start.y,
+            direction.y,
+            wall.y,
+            wall.y + wall.height
+        );
+
+        if (crossesX && crossesY)
+        {
+            return false; // A wall blocks the path.
+        }
+    }
+
+    return true; // No wall blocks the path.
+}

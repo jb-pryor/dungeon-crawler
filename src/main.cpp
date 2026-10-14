@@ -86,8 +86,7 @@ int main()
     {
       enemy.Update(deltaTime, player.GetBounds(), room.GetWalls());
 
-      if (player.DidAttackThisFrame() &&
-          player.AttackHits(enemy.GetBounds()))
+      if (player.DidAttackThisFrame() && player.AttackHits(enemy.GetBounds()) && player.HasClearAttackPath(enemy.GetBounds(), room.GetWalls()))
       {
           enemy.TakeDamage(25);
       }

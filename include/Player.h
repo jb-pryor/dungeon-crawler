@@ -27,6 +27,10 @@ class Player {
     bool DidAttackThisFrame() const;
     bool AttackHits(Rectangle target) const;
     void CancelAttack();
+      bool HasClearAttackPath(
+      Rectangle target,
+      const std::vector<Rectangle>& walls
+    ) const;
 
 
 
