@@ -21,6 +21,7 @@ class Room { //room probably needs index number for different rooms + a 2d vecto
     const std::vector<Rectangle>& GetWalls() const;
     const std::vector<Door>& GetDoors() const;
     int GetId() const;
+    const std::vector<Vector2>& GetEnemySpawns() const;
   
   private:
     int id;
@@ -29,4 +30,5 @@ class Room { //room probably needs index number for different rooms + a 2d vecto
     std::vector<std::string> tiles;
     std::vector<Rectangle> walls;
     std::vector<Door> doors;
+    std::vector<Vector2> enemySpawns;
 };

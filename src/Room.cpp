@@ -20,6 +20,7 @@ bool Room::LoadLevel(const std::string& filePath) {
   std::vector<std::string> loadedTiles;
   std::vector<Rectangle> loadedWalls;
   std::vector<Door> loadedDoors;
+  std::vector<Vector2> loadedEnemySpawns;
 
   std::string line;
 
@@ -75,6 +76,13 @@ bool Room::LoadLevel(const std::string& filePath) {
                   tile - '0',
                 });
             }
+            else if (tile == 'x') {
+
+                loadedEnemySpawns.push_back(Vector2{
+                    static_cast<float>(column) * tileSize,
+                    static_cast<float>(row) * tileSize
+                });
+            }
         }
     }
 
@@ -82,6 +90,7 @@ bool Room::LoadLevel(const std::string& filePath) {
     tiles = std::move(loadedTiles);
     walls = std::move(loadedWalls);
     doors = std::move(loadedDoors);
+    enemySpawns = std::move(loadedEnemySpawns);
 
     return true;
 
@@ -115,4 +124,9 @@ const std::vector<Door>& Room::GetDoors() const {
 int Room::GetId() const {
 
   return id;
+}
+
+const std::vector<Vector2>& Room::GetEnemySpawns() const
+{
+    return enemySpawns;
 }
